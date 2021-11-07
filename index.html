@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>Thunder</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/light.css">
+        <script>
+            function getUnixtimeJS() {
+                return Math.floor(Date.now() / 1000);
+            }
+        </script>
+        <script type="module">
+            import init from "./wasm.js"
+            init()
+        </script>
+    </head>
+    <body></body>
+</html>
