@@ -43,6 +43,19 @@ fn from_m_s(m: u32, s: u32) -> UnixtimeInterval {
     UnixtimeInterval { number: m * 60 + s }
 }
 
+fn init_timeline() -> Vec<(UnixtimeInterval, String)> {
+    let mut timeline: Vec<(UnixtimeInterval, String)> = Vec::new();
+    timeline.clear();
+    // TODO: 別のところで定義
+    timeline.push((from_m_s(9, 40), String::from("中央エビ")));
+    timeline.push((from_m_s(8, 50), String::from("中央ハチ")));
+    timeline.push((from_m_s(7, 0), String::from("カメロトム")));
+    timeline.push((from_m_s(5, 0), String::from("カメロトム（最短）")));
+    timeline.push((from_m_s(3, 0), String::from("カメロトム（最短）")));
+    timeline.push((from_m_s(2, 0), String::from("サンダー")));
+    timeline
+}
+
 pub struct Model {
     link: ComponentLink<Self>,
     callback_tick: Callback<()>,
@@ -69,7 +82,7 @@ impl Component for Model {
             job: None,
             end_at: get_unixtime(0),
             left_time: UnixtimeInterval { number: 600 },
-            timeline: Vec::new(),
+            timeline: init_timeline(),
         }
     }
 
@@ -82,11 +95,6 @@ impl Component for Model {
                         IntervalService::spawn(Duration::from_secs(1), self.callback_tick.clone());
                     self.job = Some(Box::new(handle));
                 }
-                // TODO: 別のところで定義
-                self.timeline.clear();
-                self.timeline.push((from_m_s(9, 40), String::from("中央エビ")));
-                self.timeline.push((from_m_s(8, 50), String::from("中央ハチ")));
-                self.timeline.push((from_m_s(7, 0), String::from("カメロトム")));
                 ConsoleService::clear();
                 ConsoleService::log("Interval started!");
             }
@@ -112,22 +120,31 @@ impl Component for Model {
         let has_job = self.job.is_some();
         html! {
             <div>
+                <h1>{"タイマー"}</h1>
                 <h2>{self.left_time.to_string()}</h2>
                 <button onclick=self.link.callback(|_| Msg::StartInterval) disabled=has_job>{ "Start!" }</button>
                 <button onclick=self.link.callback(|_| Msg::Cancel) disabled=!has_job>{ "Stop!" }</button>
                 <table>
-                    { for self.timeline.iter().map(|ts| html! {
-                        <tr>
-                            <td>{ts.0.to_string()}</td><td>{&ts.1}</td>
-                            <td>
-                            { match ts.0.gt(&self.left_time) {
-                                true => String::from("done"),
-                                false => String::from(""),
-                            }}
-                            </td>
-                        </tr>
-                    }) }
+                    <thead><th>{"時間"}</th><th>{"イベント"}</th><th>{"状況"}</th></thead>
+                    <tbody>
+                        { for self.timeline.iter().map(|ts| html! {
+                            <tr>
+                                <th>{ts.0.to_string()}</th><td>{&ts.1}</td>
+                                <td>
+                                { match ts.0.gt(&self.left_time) {
+                                    true => String::from("done"),
+                                    false => String::from(""),
+                                }}
+                                </td>
+                            </tr>
+                        }) }
+                    </tbody>
                 </table>
+                <hr/>
+                <ul>
+                    <li>{"リポジトリ: "}<a target="_blank" href="https://github.com/s2terminal/thunder-toritai-wasm">{"https://github.com/s2terminal/thunder-toritai-wasm"}</a></li>
+                    <li>{"参考: "}<a target="_blank" href="https://unite-db.com/maps">{"Pokemon Unite Remoat Stadium Interactive Map • Unite-DB"}</a></li>
+                </ul>
             </div>
         }
     }
