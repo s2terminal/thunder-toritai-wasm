@@ -4,6 +4,7 @@ use wasm_bindgen::prelude::*;
 use yew::prelude::*;
 
 use std::time::Duration;
+use std::cmp::max;
 
 use yew::services::{ConsoleService, IntervalService, Task};
 use yew::{html, Callback, Component, ComponentLink, Html, ShouldRender};
@@ -37,7 +38,7 @@ impl PartialEq for UnixtimeInterval {
 }
 impl Eq for UnixtimeInterval {}
 fn new_interval(start: &Unixtime, end: &Unixtime) -> UnixtimeInterval {
-    UnixtimeInterval { number: end.number - start.number }
+    UnixtimeInterval { number: max(0, end.number - start.number) }
 }
 fn from_m_s(m: u32, s: u32) -> UnixtimeInterval {
     UnixtimeInterval { number: m * 60 + s }
@@ -47,11 +48,14 @@ fn init_timeline() -> Vec<(UnixtimeInterval, String)> {
     let mut timeline: Vec<(UnixtimeInterval, String)> = Vec::new();
     timeline.clear();
     // TODO: 別のところで定義
-    timeline.push((from_m_s(9, 40), String::from("中央エビ")));
-    timeline.push((from_m_s(8, 50), String::from("中央ハチ")));
-    timeline.push((from_m_s(7, 0), String::from("カメロトム")));
-    timeline.push((from_m_s(5, 0), String::from("カメロトム（最短）")));
-    timeline.push((from_m_s(3, 0), String::from("カメロトム（最短）")));
+    timeline.push((from_m_s(10, 0), String::from("エイパム")));
+    timeline.push((from_m_s(9, 40), String::from("上下エビ１")));
+    timeline.push((from_m_s(9, 40), String::from("ルンパッパ・バッフロン")));
+    timeline.push((from_m_s(8, 50), String::from("中央ハチ１")));
+    timeline.push((from_m_s(8, 45), String::from("中央エビ１")));
+    timeline.push((from_m_s(7, 0), String::from("カメロトム１")));
+    timeline.push((from_m_s(5, 0), String::from("カメロトム２（最短）")));
+    timeline.push((from_m_s(3, 0), String::from("カメロトム３（最短）")));
     timeline.push((from_m_s(2, 0), String::from("サンダー")));
     timeline
 }
